@@ -3,6 +3,6 @@ ANDROID_MKEF_FILES_HOME should be globally set to the path for this
 directory. For example:
 
 
-ANDROID_MKEF_FILES_HOME = /home/jdoe/appvet_tools/android_mkef_files
+ANDROID_MKEF_FILES_HOME = /home/<username>/android_mkef_files
 
 
