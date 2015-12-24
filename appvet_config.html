@@ -34,8 +34,7 @@
 	<b>Role</b> to 'TOOL_PROVIDER' in the Add User dialog box. All other
 	parameters should be set to appropriate values as shown, for example,
 	in Figure 1. Remember your selected
-	<b>Password</b> as this will be needed later to configure the APK
-	Signature Verifier.
+	<b>Password</b> as this will be needed later to configure the MKEF Scanner.
 	<br>
 	<br>
 	<br>
@@ -52,41 +51,41 @@
 
 	<h2 id="adapter">Step 2. Install AppVet Tool Adapter</h2>
 	
-	From the AppVet server, open a browser and download the latest APK Signature Verifier tool adapter 
-	<code>android-sigverifier-tool.xml</code> file at:
+	From the AppVet server, open a browser and download the latest MKEF Scanner tool adapter 
+	<code>android-mkef-tool.xml</code> file at:
 		<br>
 		<p style="text-indent: 5em;">
-		<a class="underline" href="https://github.com/AppVet/android-sigverifier-tool/releases"
-			target="_blank">https://github.com/AppVet/android-sigverifier-tool/releases</a>
+		<a class="underline" href="https://github.com/AppVet/android-mkef-tool/releases"
+			target="_blank">https://github.com/AppVet/android-mkef-tool/releases</a>
 	</p>
 		<br>
 	and move it to your <code>$APPVET_FILES_HOME/conf/tool_adapters/android</code> directory. 
 	<p>
-	Next, edit <code>android-sigverifier-tool.xml</code> by changing the 
-	<code>&lt;appvet:URL&gt;</code> property to reflect the tool server's hostname or IP address. If the APK Signature Verifier 
+	Next, edit <code>android-mkef-tool.xml</code> by changing the 
+	<code>&lt;appvet:URL&gt;</code> property to reflect the tool server's hostname or IP address. If the MKEF Scanner 
 	resides on the same server as AppVet, then set <code>&lt;appvet:URL&gt;</code> to:</p>
 	
 				<p>
 	<pre>
 		<code>
-	&lt;appvet:URL&gt;http://127.0.0.1:8080/android-sigverifier-tool/Service&lt;/appvet:URL&gt;
+	&lt;appvet:URL&gt;http://127.0.0.1:8080/android-mkef-tool/Service&lt;/appvet:URL&gt;
 		</code>
 		</pre>
 	</p>
 	
 	
-	If, however, APK Signature Verifier 
+	If, however, MKEF Scanner
 	resides on a different server (e.g., <code>tools.example.com</code>) and uses SSL and port 8443, then set <code>&lt;appvet:URL&gt;</code> to: 
 	
 		<p>
 	<pre>
 		<code>
-	&lt;appvet:URL&gt;https://tools.example.com:8443/android-sigverifier-tool/Service&lt;/appvet:URL&gt;
+	&lt;appvet:URL&gt;https://tools.example.com:8443/android-mkef-tool/Service&lt;/appvet:URL&gt;
 		</code>
 		</pre>
 	</p>
 	
-	Note that the '<code>/android-sigverifier-tool/Service</code>' portion of the URL should never be modified. 
+	Note that the '<code>/android-mkef-tool/Service</code>' portion of the URL should never be modified. 
 	For more information on
 	Tool Adapter Properties, see
 	<a class="underline"
@@ -97,17 +96,17 @@
 		<h2 id="test">Step 3. Test or Install Tool</h2>
 	
 	<h3>Test</h3>
-<p>If you are connecting to an existing APK Signature Verifier tool that is accessible to AppVet, you can test the 
-tool now by logging into AppVet, uploading an app, and viewing the APK Signature Verifier report. The APK Signature Verifier 
+<p>If you are connecting to an existing MKEF Scanner tool that is accessible to AppVet, you can test the 
+tool now by logging into AppVet, uploading an app, and viewing the MKEF Scanner report. The MKEF Scanner
 status and report are shown in Figure 1.
 
 <br>
 <br>
 <br>
 <center>
-	<img width="700px" src="images/apk-sigverify-tool.png" alt="APK Signature Verifier Screenshot">
+	<img width="700px" src="images/mkef_screenshot.png" alt="MKEF Scanner Screenshot">
 	<br> <br> 
-			<p class="cap">Figure 1. APK Signature Verifier.</p>
+			<p class="cap">Figure 1. MKEF Scanner.</p>
 	
 </center>
 <br>
@@ -119,8 +118,8 @@ If you experience errors
 connecting to the tool, verify the tool adapter properties or contact the tool's host administrator. 
 
 	<h3>Install Tool</h3>
-If you do not yet have access to an existing APK Signature Verifier tool, you must 
-install it. For more information, see the APK Signature Verifier <a href="tool_installation.html">Tool Installation</a>.
+If you do not yet have access to an existing MKEF Scanner tool, you must 
+install it. For more information, see the MKEF Scanner <a href="tool_installation.html">Tool Installation</a>.
 <br>
 <br>
 <br>
