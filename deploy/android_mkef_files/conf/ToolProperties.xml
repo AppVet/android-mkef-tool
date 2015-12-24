@@ -2,9 +2,9 @@
 <appvet:Tool xmlns:appvet="http://appvet.github.io/appvet/schemas"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://appvet.github.io/appvet/schemas ToolProperties.xsd ">
-	<appvet:Name>Android MKEF Service</appvet:Name>
+	<appvet:Name>MKEF Scanner</appvet:Name>
 	<appvet:Version>1.0</appvet:Version>
-	<appvet:ServiceURL>http://127.0.0.1:8080/android-mkef-toolservice</appvet:ServiceURL>
+	<appvet:ServiceURL>http://127.0.0.1:8080/android-mkef-tool</appvet:ServiceURL>
 	<appvet:AppVetProtocol>ASYNCHRONOUS</appvet:AppVetProtocol>
 	<appvet:AppOs>ANDROID</appvet:AppOs>
 	<appvet:Command/>
@@ -26,8 +26,8 @@
 	<appvet:AppVet>
 		<appvet:URL>http://127.0.0.1:8080/appvet/AppVetServlet</appvet:URL>
 		<appvet:Method>POST</appvet:Method>
-		<appvet:ToolId>androidmkef</appvet:ToolId>
-		<appvet:Username>androidmkef-username</appvet:Username>
-		<appvet:Password>androidmkef-password</appvet:Password>
+		<appvet:ToolId>mkef</appvet:ToolId>
+		<appvet:Username>mkef</appvet:Username>
+		<appvet:Password>mkef-password</appvet:Password>
 	</appvet:AppVet>
 </appvet:Tool>

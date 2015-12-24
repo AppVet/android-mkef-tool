@@ -3,12 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://appvet.github.io/appvet/schemas ToolAdapter.xsd ">
 	<appvet:Description>
-		<appvet:Name>Android MKEF Service</appvet:Name>
-		<appvet:Id>androidmkef</appvet:Id>
+		<appvet:Name>MKEF Scanner</appvet:Name>
+		<appvet:Id>mkef</appvet:Id>
 		<appvet:Category>TESTTOOL</appvet:Category>
 		<appvet:OS>ANDROID</appvet:OS>
 		<appvet:VendorName>NIST</appvet:VendorName>
-		<appvet:VendorWebsite>http://127.0.0.1:8080/android-mkef-toolservice</appvet:VendorWebsite>
+		<appvet:VendorWebsite>http://appvet.github.io/android-mkef-tool/</appvet:VendorWebsite>
 		<appvet:AppSubmit>APP_FILE</appvet:AppSubmit>
 		<appvet:AuthenticationRequired>false</appvet:AuthenticationRequired>
 		<appvet:ReportFile>HTML</appvet:ReportFile>
@@ -16,7 +16,7 @@
 	<appvet:Protocol>
 		<appvet:Asynchronous>
 			<appvet:Request>
-				<appvet:URL>http://127.0.0.1:8080/android-mkef-toolservice/Service</appvet:URL>
+				<appvet:URL>http://127.0.0.1:8080/android-mkef-tool/Service</appvet:URL>
 				<appvet:Method>POST</appvet:Method>
 				<appvet:AuthenticationRequired>false</appvet:AuthenticationRequired>
 				<appvet:Parameter>
