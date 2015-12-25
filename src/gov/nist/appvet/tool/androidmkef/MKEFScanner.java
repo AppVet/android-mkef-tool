@@ -29,65 +29,65 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class MKEFScanner {
-	ZipFile apkFile = null;
+    ZipFile apkFile = null;
 
-	public MKEFScanner(String apkPath) {
-		try {
-			apkFile = new ZipFile(apkPath);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+    public MKEFScanner(String apkPath) {
+	try {
+	    apkFile = new ZipFile(apkPath);
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
+    }
 
-	public boolean hasMasterKey() {
-		Enumeration<? extends ZipEntry> apkFileEntries = apkFile.entries();
-		ArrayList<String> entries = new ArrayList<String>();
+    public boolean hasMasterKey() {
+	Enumeration<? extends ZipEntry> apkFileEntries = apkFile.entries();
+	ArrayList<String> entries = new ArrayList<String>();
 
-		while (apkFileEntries.hasMoreElements()) {
-			String entry = apkFileEntries.nextElement().toString();
-			if (!entries.contains(entry)) {
-				entries.add(entry);
-			} else {
-				// Duplicate found
-				return true;
-			}
-		}
-		return false;
+	while (apkFileEntries.hasMoreElements()) {
+	    String entry = apkFileEntries.nextElement().toString();
+	    if (!entries.contains(entry)) {
+		entries.add(entry);
+	    } else {
+		// Duplicate found
+		return true;
+	    }
 	}
+	return false;
+    }
 
-	public boolean hasExtraField() {
-		Enumeration<? extends ZipEntry> apkFileEntries = apkFile.entries();
-		try {
-			while (apkFileEntries.hasMoreElements()) {
-				ZipEntry entry = apkFileEntries.nextElement();
-				InputStream inputStream = apkFile.getInputStream(entry);
-				int numBytesRead;
-				byte[] byteArray = new byte[1024];
-				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-				while ((numBytesRead = inputStream.read(byteArray, 0,
-						byteArray.length)) != -1) {
-					byteArrayOutputStream.write(byteArray, 0, numBytesRead);
-				}
-				byte[] bytes = byteArrayOutputStream.toByteArray();
-				CRC32 cs = new CRC32();
-				cs.update(bytes);
-				if (cs.getValue() != entry.getCrc()) {
-					return true;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+    public boolean hasExtraField() {
+	Enumeration<? extends ZipEntry> apkFileEntries = apkFile.entries();
+	try {
+	    while (apkFileEntries.hasMoreElements()) {
+		ZipEntry entry = apkFileEntries.nextElement();
+		InputStream inputStream = apkFile.getInputStream(entry);
+		int numBytesRead;
+		byte[] byteArray = new byte[1024];
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		while ((numBytesRead = inputStream.read(byteArray, 0,
+			byteArray.length)) != -1) {
+		    byteArrayOutputStream.write(byteArray, 0, numBytesRead);
 		}
-		return false;
+		byte[] bytes = byteArrayOutputStream.toByteArray();
+		CRC32 cs = new CRC32();
+		cs.update(bytes);
+		if (cs.getValue() != entry.getCrc()) {
+		    return true;
+		}
+	    }
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
+	return false;
+    }
 
-	public void close() {
-		if (apkFile != null) {
-			try {
-				apkFile.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+    public void close() {
+	if (apkFile != null) {
+	    try {
+		apkFile.close();
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
 	}
+    }
 }

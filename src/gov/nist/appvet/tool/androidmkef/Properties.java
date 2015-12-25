@@ -38,10 +38,6 @@ public class Properties {
 	 */
 	public static String ANDROID_MKEF_FILES_HOME = null;
 	public static String LOG_DISPLAY_NAME = "MKEF";
-	// Defines variable in ToolAdapter.xml
-	public static final String APP_FILE_PATH = "[APP_FILE_PATH]";
-	// Defines variable in ToolAdapter.xml
-	public static final String OUTPUT_FILE_PATH = "[OUTPUT_FILE_PATH]";
 	
 	/** DON'T CHANGE (START) **/
 	public static String JAVA_HOME = null;
@@ -91,16 +87,6 @@ public class Properties {
 		
 		/* CHANGE (START): Check if tool exists */
 		// No MKEF tool is called, it is an integrated Java class.
-//		String jarsignerPath = JAVA_HOME;
-//		if (toolOS.toUpperCase().indexOf("WIN") > -1) {
-//			jarsignerPath += "/bin/jarsigner.exe";
-//		} else if (toolOS.toUpperCase().indexOf("NUX") > -1) {
-//			jarsignerPath += "/bin/jarsigner";
-//		}
-//		File file = new File(jarsignerPath);
-//		if (!file.exists()) {
-//			System.err.println(jarsignerPath + " not found");
-//		}
 		/* CHANGE (END): Check if tool exists */
 		
 		TEMP_DIR = ANDROID_MKEF_FILES_HOME + "/apps";
@@ -109,26 +95,12 @@ public class Properties {
 			tempDir.mkdirs();
 			System.out.println("Created apps directory for MKEF");
 		}
-		
-//		if (!TEMP_DIR.exists()) {
-//		    TEMP_DIR.mkdirs();
-//			System.out.println("Created apps directory");
-//		}
-//		
-//		if (!new File(TEMP_DIR).exists()) {
-//			System.err
-//					.println("Directory $ANDROID_MKEF_FILES_HOME/apps does not exist.");
-//		}
+
 		CONF_DIR = ANDROID_MKEF_FILES_HOME + "/conf";
 		if (!new File(CONF_DIR).exists()) {
 			System.err
 					.println("Directory $ANDROID_MKEF_FILES_HOME/conf does not exist.");
 		}
-		LOGS_DIR = ANDROID_MKEF_FILES_HOME + "/logs";
-//		if (!new File(LOGS_DIR).exists()) {
-//			System.err
-//					.println("Directory $ANDROID_MKEF_FILES_HOME/logs does not exist.");
-//		}
 		
 		// Load XML property file
 		File configFile = new File(CONF_DIR + "/" + PROPERTIES_FILE_NAME);
@@ -139,10 +111,8 @@ public class Properties {
 		
 		// Do Logging first so we can use log below
 		String logName = xml.getXPathValue("/Tool/Logging/LogName");
+		LOGS_DIR = ANDROID_MKEF_FILES_HOME + "/logs";
 		LOG_PATH = LOGS_DIR + "/" + logName;
-//		if (!new File(LOG_PATH).exists()) {
-//			System.err.println("Log " + LOG_PATH + " does not exist.");
-//		}
 		LOG_LEVEL = xml.getXPathValue("/Tool/Logging/Level");
 		LOG_TO_CONSOLE = new Boolean(
 				xml.getXPathValue("/Tool/Logging/ToConsole")).booleanValue();
