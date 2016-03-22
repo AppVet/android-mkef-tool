@@ -79,7 +79,7 @@ public class Properties {
 	/* CHANGE: Loading statement */
 	//System.out.println("*** Starting Android MKEF Service v" + version
 	//	+ " ***");
-	String toolOS = System.getProperty("os.name");
+//	String toolOS = System.getProperty("os.name");
 	JAVA_HOME = System.getenv("JAVA_HOME");
 	if (JAVA_HOME == null) {
 	    System.err.println("Environment variable JAVA_HOME not set.");
