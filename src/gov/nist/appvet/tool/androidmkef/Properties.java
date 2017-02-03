@@ -22,6 +22,7 @@ package gov.nist.appvet.tool.androidmkef;
 import gov.nist.appvet.tool.androidmkef.util.Logger;
 import gov.nist.appvet.tool.androidmkef.util.ToolStatus;
 import gov.nist.appvet.tool.androidmkef.util.Xml;
+import gov.nist.appvet.tool.androidmkef.util.LogMaintainer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -188,5 +189,9 @@ public class Properties {
 	appvetPassword = xml.getXPathValue("/Tool/AppVet/Password");
 	// log.info("/Tool/AppVet/Password: " + appvetPassword);
 
+	// Start log maintainer
+	LogMaintainer logMaintainer = new LogMaintainer();
+	Thread thread = new Thread(logMaintainer);
+	thread.start();
     }
 }
