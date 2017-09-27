@@ -163,6 +163,15 @@ public class Service extends HttpServlet {
 		 */
 		// boolean succeeded = execute(command, reportBuffer);
 		boolean succeeded = customExecute(reportBuffer);
+		
+		// Delay for demo purposes
+        try {
+			Thread.sleep(Properties.delay);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 
 		if (!succeeded) {
 			log.error("Error detected: " + reportBuffer.toString());

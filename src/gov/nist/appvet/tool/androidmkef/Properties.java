@@ -54,6 +54,7 @@ public class Properties {
     public static boolean keepApps = false;
     public static String command = null;
     public static int commandTimeout = 0;
+    public static int delay = 0;
     public static String reportFormat = null;
     public static String serviceUrl = null;
     public static Logger log = null;
@@ -157,6 +158,9 @@ public class Properties {
 	// Command Timeout
 	String cmdTimeoutStr = xml.getXPathValue("/Tool/CommandTimeout");
 	commandTimeout = new Integer(cmdTimeoutStr).intValue();
+	
+	String delayStr = xml.getXPathValue("/Tool/Delay");
+	delay = new Integer(delayStr).intValue();
 
 	// Get report format
 	reportFormat = xml.getXPathValue("/Tool/Report/Format");

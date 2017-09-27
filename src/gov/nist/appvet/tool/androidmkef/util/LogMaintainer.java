@@ -66,7 +66,7 @@ public class LogMaintainer implements Runnable {
 
 		File folder = new File(logsDir);
 		if (!folder.exists()) {
-			log.error("Kryptowire logs directory does not exist");
+			log.error("MKEF logs directory does not exist");
 			return;
 		}
 		
