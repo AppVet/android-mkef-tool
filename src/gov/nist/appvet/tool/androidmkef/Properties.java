@@ -51,7 +51,7 @@ public class Properties {
     public static String toolName = null;
     public static String toolVersion = null;
     public static String protocol = null;
-    public static boolean keepApps = false;
+    public static boolean keepApps = true;
     public static String command = null;
     public static int commandTimeout = 0;
     public static int delay = 0;
@@ -151,9 +151,9 @@ public class Properties {
 	command = xml.getXPathValue("/Tool/Command");
 	log.info("/Tool/Command: " + command);
 	
-	// Keep Apps
-	keepApps = new Boolean(xml.getXPathValue("/Tool/KeepApps")).booleanValue();
-	log.info("/Tool/KeepApps: " + keepApps);
+//	// Keep Apps
+//	keepApps = new Boolean(xml.getXPathValue("/Tool/KeepApps")).booleanValue();
+//	log.info("/Tool/KeepApps: " + keepApps);
 
 	// Command Timeout
 	String cmdTimeoutStr = xml.getXPathValue("/Tool/CommandTimeout");

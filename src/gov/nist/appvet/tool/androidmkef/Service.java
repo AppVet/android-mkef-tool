@@ -42,6 +42,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 
 /**
  * This class implements a synchronous tool service.
@@ -162,8 +163,10 @@ public class Service extends HttpServlet {
 		 * unused method call is commented-out.
 		 */
 		// boolean succeeded = execute(command, reportBuffer);
+		log.debug("Executing MKEF on app");
 		boolean succeeded = customExecute(reportBuffer);
-		
+		log.debug("Finished execution MKEF on app - succeeded: " + succeeded);
+
 		// Delay for demo purposes
         try {
 			Thread.sleep(Properties.delay);
@@ -248,10 +251,12 @@ public class Service extends HttpServlet {
 
 		// Clean up
 		if (!Properties.keepApps) {
-			if (FileUtil.deleteDirectory(new File(appDirPath))) {
-				log.debug("Deleted " + appFilePath);
-			} else {
-				log.warn("Could not delete " + appFilePath);
+			//FileUtil.deleteDir(new File(appDirPath));
+			try {
+				FileUtils.deleteDirectory(new File(appDirPath));
+
+			} catch (IOException ioe) {
+				log.error(ioe.getMessage());
 			}
 		}
 
@@ -306,16 +311,23 @@ public class Service extends HttpServlet {
     }
 
 	public boolean customExecute(StringBuffer output) {
+		log.debug("Creating MKEFScanner");
 		MKEFScanner mkefScan = new MKEFScanner(appFilePath);
+		log.debug("Created MKEFScanner");
+
 		if (mkefScan.hasMasterKey()) {
+			mkefScan.close();
 			// The following String MUST match in ToolProperties.xml
 			output.append("Android MasterKey vulnerability detected.");
 			return true;
 		} else if (mkefScan.hasExtraField()) {
+			mkefScan.close();
 			// The following String MUST match in ToolProperties.xml
 			output.append("Android ExtraField vulnerability detected.");
 			return true;
 		} else {
+			log.debug("Mo Master KEy found");
+			mkefScan.close();
 			output.append("No Android MaskterKey or ExtraField vulnerabilities detected.");
 		}
 		return true;

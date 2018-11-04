@@ -134,12 +134,11 @@ public class ReportUtil {
 	htmlBuffer.append("<body>\n");
 	
 	// Carwash AppVet banner
-	htmlBuffer.append("<table style=\"background:#015289;width:100%\">\n");
-	htmlBuffer.append("<tr>\n");
-	htmlBuffer.append("<td>\n");
-	String appvetLogo = "../appvet_images/appvet_logo_main.png";
-	htmlBuffer.append("<img src=\"" + appvetLogo + "\" alt=\"Carwash AppVet\" height=\"25\" width=\"200\">\n");
-	htmlBuffer.append("</tr>\n");
+	htmlBuffer.append("<table style=\"width: 100%; background:#075b8a;padding:0px;margin:0px;\">\n");
+	htmlBuffer.append("<tr>");
+	htmlBuffer.append("<td style=\"width:50%;padding:0px;margin:0px;\" align=\"left\"><img src=\"images/dhs_logo_white.png\" alt=\"DHS logo\" style=\"height: 40px;\"></td>");
+	htmlBuffer.append("<td style=\"width:50%;padding:0px;margin:0px;\" align=\"right\"><img src=\"images/appvet_logo.png\" alt=\"AppVet logo\" style=\"height: 35px;\"></td>");
+	htmlBuffer.append("</tr>");
 	htmlBuffer.append("</td>\n");
 	htmlBuffer.append("</table>\n");
 	htmlBuffer.append("<br>\n");
