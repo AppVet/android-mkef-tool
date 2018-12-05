@@ -48,9 +48,8 @@ public class Properties {
 	public static String toolVersion = null;
 	public static String protocol = null;
 	public static boolean keepApps = false;
-	public static String command = null;
+	public static String htmlToPdfCommand = null;
 	public static int commandTimeout = 0;
-	public static int delay = 0;
 	public static String reportFormat = null;
 	public static String serviceUrl = null;
 	public static Logger log = null;
@@ -71,13 +70,9 @@ public class Properties {
 	public static String toolId = null;
 	public static String appvetUsername = null;
 	public static String appvetPassword = null;
-	/** DON'T CHANGE (END) **/
 
 	static {
-		/* CHANGE: Loading statement */
-		//System.out.println("*** Starting Android MKEF Service v" + version
-		//	+ " ***");
-		//	String toolOS = System.getProperty("os.name");
+
 		JAVA_HOME = System.getenv("JAVA_HOME");
 		if (JAVA_HOME == null) {
 			System.err.println("Environment variable JAVA_HOME not set.");
@@ -89,10 +84,6 @@ public class Properties {
 			System.err
 			.println("Environment variable ANDROID_MKEF_FILES_HOME not set.");
 		}
-
-		/* CHANGE (START): Check if tool exists */
-		// No MKEF tool is called, it is an integrated Java class.
-		/* CHANGE (END): Check if tool exists */
 
 		TEMP_DIR = ANDROID_MKEF_FILES_HOME + "/apps";
 		File tempDir = new File(TEMP_DIR);
@@ -143,20 +134,14 @@ public class Properties {
 		protocol = xml.getXPathValue("/Tool/AppVetProtocol");
 		log.info("/Tool/AppVetProtocol: " + protocol);
 
-		// Command
-		command = xml.getXPathValue("/Tool/Command");
-		log.info("/Tool/Command: " + command);
-
-		//	// Keep Apps
-		//	keepApps = new Boolean(xml.getXPathValue("/Tool/KeepApps")).booleanValue();
-		//	log.info("/Tool/KeepApps: " + keepApps);
+		// HtmlToPDF Command
+		htmlToPdfCommand = xml.getXPathValue("/Tool/HtmlToPdfCmd");
+		log.info("/Tool/HtmlToPdfCmd: " + htmlToPdfCommand);
 
 		// Command Timeout
 		String cmdTimeoutStr = xml.getXPathValue("/Tool/CommandTimeout");
 		commandTimeout = new Integer(cmdTimeoutStr).intValue();
-
-		String delayStr = xml.getXPathValue("/Tool/Delay");
-		delay = new Integer(delayStr).intValue();
+		log.info("/Tool/CommandTimeout: " + commandTimeout);
 
 		// Get report format
 		reportFormat = xml.getXPathValue("/Tool/Report/Format");

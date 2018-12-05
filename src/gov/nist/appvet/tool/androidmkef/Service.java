@@ -146,7 +146,6 @@ public class Service extends HttpServlet {
 			return;
 		}
 
-
 		// If asynchronous, send acknowledgement back to AppVet
 		if (Properties.protocol.equals(Protocol.ASYNCHRONOUS.name())) {
 			HttpUtil.sendHttp202(response, "Received app " + appId
@@ -176,15 +175,19 @@ public class Service extends HttpServlet {
 			// Send report to AppVet
 			if (Properties.protocol.equals(Protocol.ASYNCHRONOUS.name())) {
 				// Send report file in new HTTP Request to AppVet
-				boolean fileSaved = FileUtil.saveReport(errorReport, htmlFileReportPath);
+				boolean fileSaved = FileUtil.saveReport(errorReport,
+						htmlFileReportPath);
 				if (fileSaved) {
-					final StringBuffer reportBuffer = new StringBuffer();	
-					boolean htmlToPdfSuccessful = 
-							execute("wkhtmltopdf " + htmlFileReportPath + " " + pdfFileReportPath, reportBuffer);
+					final StringBuffer reportBuffer = new StringBuffer();
+					boolean htmlToPdfSuccessful = execute(Properties.htmlToPdfCommand + " " 
+							+ htmlFileReportPath + " " + pdfFileReportPath,
+							reportBuffer);
 					if (htmlToPdfSuccessful) {
-						ReportUtil.sendInNewHttpRequest(appId, pdfFileReportPath,ToolStatus.ERROR);
+						ReportUtil.sendInNewHttpRequest(appId,
+								pdfFileReportPath, ToolStatus.ERROR);
 					} else {
-						log.error("Error generating PDF file " + pdfFileReportPath);
+						log.error("Error generating PDF file "
+								+ pdfFileReportPath);
 					}
 				} else {
 					log.error("Error writing HTML report " + htmlFileReportPath);
@@ -195,12 +198,11 @@ public class Service extends HttpServlet {
 
 		// Analyze report and generate tool status
 		log.debug("Analyzing report for " + appFilePath);
-		ToolStatus reportStatus = analyzeReport(reportBuffer
-				.toString());
+		ToolStatus reportStatus = analyzeReport(reportBuffer.toString());
 		log.debug("Result: " + reportStatus.name());
 		String reportContent = null;
 
-		// Get report
+		// Get report TODO Fix HTML requirement here
 		if (Properties.reportFormat.equals(ReportFormat.HTML.name())) {
 			reportContent = ReportUtil
 					.getHtmlReport(
@@ -223,13 +225,16 @@ public class Service extends HttpServlet {
 		// Send report to AppVet
 		if (Properties.protocol.equals(Protocol.ASYNCHRONOUS.name())) {
 			// Send report file in new HTTP Request to AppVet
-			boolean htmlFileSaved = FileUtil.saveReport(reportContent, htmlFileReportPath);
+			boolean htmlFileSaved = FileUtil.saveReport(reportContent,
+					htmlFileReportPath);
 			if (htmlFileSaved) {
-				final StringBuffer reportBuffer = new StringBuffer();	
-				boolean htmlToPdfSuccessful = 
-						execute("wkhtmltopdf " + htmlFileReportPath + " " + pdfFileReportPath, reportBuffer);
+				final StringBuffer reportBuffer = new StringBuffer();
+				boolean htmlToPdfSuccessful = execute(Properties.htmlToPdfCommand + " " 
+						+ htmlFileReportPath + " " + pdfFileReportPath,
+						reportBuffer);
 				if (htmlToPdfSuccessful) {
-					ReportUtil.sendInNewHttpRequest(appId, pdfFileReportPath, reportStatus);
+					ReportUtil.sendInNewHttpRequest(appId, pdfFileReportPath,
+							reportStatus);
 				} else {
 					log.error("Error generating PDF file " + pdfFileReportPath);
 				}
@@ -321,9 +326,10 @@ public class Service extends HttpServlet {
 		return true;
 	}
 
-	/** IMPORTANT: Make sure that tool to execute is in a user-owned directory
-	 * with executable permissions for root. Otherwise, the tool may not 
-	 * execute properly.
+	/**
+	 * IMPORTANT: Make sure that tool to execute is in a user-owned directory
+	 * with executable permissions for root. Otherwise, the tool may not execute
+	 * properly.
 	 */
 	private boolean execute(String command, StringBuffer output) {
 		List<String> commandArgs = Arrays.asList(command.split("\\s+"));
@@ -376,7 +382,7 @@ public class Service extends HttpServlet {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			} 
+			}
 			if (errorHandler != null && errorHandler.isAlive()) {
 				try {
 					errorHandler.inputStream.close();
@@ -386,7 +392,7 @@ public class Service extends HttpServlet {
 			}
 			if (process != null && process.isAlive()) {
 				process.destroy();
-			} 
+			}
 		}
 
 	}
@@ -394,26 +400,26 @@ public class Service extends HttpServlet {
 	private class IOThreadHandler extends Thread {
 		private InputStream inputStream;
 		private StringBuffer output = new StringBuffer();
-		private final String lineSeparator = 
-				System.getProperty("line.separator");;
+		private final String lineSeparator = System
+				.getProperty("line.separator");
 
-				IOThreadHandler(InputStream inputStream) {
-					this.inputStream = inputStream;
-				}
+		IOThreadHandler(InputStream inputStream) {
+			this.inputStream = inputStream;
+		}
 
-				public void run() {
-					Scanner br = null;
-					br = new Scanner(new InputStreamReader(inputStream));
-					String line = null;
-					while (br.hasNextLine()) {
-						line = br.nextLine();
-						output.append(line + lineSeparator);
-					}
-					br.close();
-				}
+		public void run() {
+			Scanner br = null;
+			br = new Scanner(new InputStreamReader(inputStream));
+			String line = null;
+			while (br.hasNextLine()) {
+				line = br.nextLine();
+				output.append(line + lineSeparator);
+			}
+			br.close();
+		}
 
-				public StringBuffer getOutput() {
-					return output;
-				}
+		public StringBuffer getOutput() {
+			return output;
+		}
 	}
 }

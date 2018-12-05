@@ -124,6 +124,18 @@ public class ReportUtil {
 			String fileName, ToolStatus reportStatus, String report,
 			String lowDescription, String moderateDescription,
 			String highDescription, String errorDescription) {
+		
+		String dhsLogoPath = null;
+		String appvetLogoPath = null;
+		String toolOS = System.getProperty("os.name");
+		if (toolOS.toUpperCase().indexOf("WIN") > -1) {
+			dhsLogoPath = "C:\\appvet_tools\\android_mkef_files\\images\\dhs.jpg";
+			appvetLogoPath = "C:\\appvet_tools\\android_mkef_files\\images\\appvet.png";
+		} else if (toolOS.toUpperCase().indexOf("NUX") > -1) {
+			dhsLogoPath = "/data/appvet_tools/android_mkef_files/images/dhs.jpg";
+			appvetLogoPath = "/data/appvet_tools/android_mkef_files/images/appvet.png";
+		}
+		
 		StringBuffer htmlBuffer = new StringBuffer();
 		htmlBuffer.append("<HTML>\n");
 		htmlBuffer.append("<head>\n");
@@ -136,11 +148,13 @@ public class ReportUtil {
 		htmlBuffer.append("</head>\n");
 		htmlBuffer.append("<body>\n");
 
-		// Carwash AppVet banner
+		// AppVet banner
 		htmlBuffer.append("<table style=\"width: 100%; background:white;padding:0px;margin:0px;\">\n");
 		htmlBuffer.append("<tr>");
-		htmlBuffer.append("<td style=\"width:50%;padding:0px;margin:0px;\" align=\"left\"><img src=\"C:\\appvet_tools\\android_mkef_files\\images\\dhs.jpg\" alt=\"DHS logo\" style=\"height: 40px;\"></td>");
-		htmlBuffer.append("<td style=\"width:50%;padding:0px;margin:0px;\" align=\"right\"><img src=\"C:\\appvet_tools\\android_mkef_files\\images\\appvet.png\" alt=\"AppVet logo\" style=\"height: 35px;\"></td>");
+		
+		htmlBuffer.append("<td style=\"width:50%;padding:0px;margin:0px;\" align=\"left\"><img src=\"" + dhsLogoPath + "\" alt=\"DHS logo\" style=\"height: 40px;\"></td>");
+		htmlBuffer.append("<td style=\"width:50%;padding:0px;margin:0px;\" align=\"right\"><img src=\"" + appvetLogoPath + "\" alt=\"AppVet logo\" style=\"height: 35px;\"></td>");
+
 		htmlBuffer.append("</tr>");
 		htmlBuffer.append("</td>\n");
 		htmlBuffer.append("</table>\n");
@@ -172,12 +186,10 @@ public class ReportUtil {
 					+ reportStatus.name() + "</font>\n");
 			htmlBuffer.append(errorDescription);
 		}
-		htmlBuffer.append("<hr>");
-		htmlBuffer.append("<h4>Details</h4>");
+		htmlBuffer.append("<h3>Details</h3>");
 		htmlBuffer.append(report);
 		htmlBuffer.append("</body>\n");
 		htmlBuffer.append("</HTML>\n");
 		return htmlBuffer.toString();
 	}
-
 }
