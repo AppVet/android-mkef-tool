@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
@@ -90,10 +91,6 @@ public class ReportUtil {
 			MultipartEntity entity = new MultipartEntity();
 			entity.addPart("command",
 					new StringBody("SUBMIT_REPORT", Charset.forName("UTF-8")));
-			entity.addPart("username", new StringBody(
-					Properties.appvetUsername, Charset.forName("UTF-8")));
-			entity.addPart("password", new StringBody(
-					Properties.appvetPassword, Charset.forName("UTF-8")));
 			entity.addPart("appid",
 					new StringBody(appId, Charset.forName("UTF-8")));
 			entity.addPart("toolid",
@@ -106,6 +103,8 @@ public class ReportUtil {
 			entity.addPart("file", fileBody);
 			
 			HttpPost httpPost = new HttpPost(Properties.appvetUrl);
+			String credentials = Base64.getEncoder().encodeToString((Properties.appvetUsername + ":" + Properties.appvetPassword).getBytes());
+			httpPost.setHeader("Authorization", "Basic " + credentials);
 			httpPost.setEntity(entity);
 			// Send the report to AppVet
 			log.debug("Sending report file to AppVet");
