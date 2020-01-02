@@ -72,7 +72,7 @@ public class ReportUtil {
 
 	/** This method should be used for sending files back to AppVet. */
 	public static boolean sendInNewHttpRequest(String appId,
-			String reportFilePath, ToolStatus reportStatus) {
+			String reportFilePath, double score, ToolStatus reportStatus) {
 		
 		HttpParams httpParameters = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParameters, 30000);
@@ -85,7 +85,7 @@ public class ReportUtil {
 			 * To send reports back to AppVet, the following parameters must be
 			 * sent: - command: SUBMIT_REPORT - username: AppVet username -
 			 * password: AppVet password - appid: The app ID - toolid: The ID of
-			 * this tool - toolrisk: The risk assessment (LOW, MODERATE, HIGH,
+			 * this tool - toolrisk: The severity assessment (LOW, MODERATE, HIGH,
 			 * ERROR) - report: The report file.
 			 */
 			MultipartEntity entity = new MultipartEntity();
@@ -95,12 +95,22 @@ public class ReportUtil {
 					new StringBody(appId, Charset.forName("UTF-8")));
 			entity.addPart("toolid",
 					new StringBody(Properties.toolId, Charset.forName("UTF-8")));
+			entity.addPart("toolscore",
+					new StringBody(score + "", Charset.forName("UTF-8")));
+			// TODO: Remove toolrisk since toolscore should be enough 
 			entity.addPart("toolrisk", new StringBody(reportStatus.name(),
 					Charset.forName("UTF-8")));
 			File report = new File(reportFilePath);
 			FileBody fileBody = new FileBody(report);
 			
 			entity.addPart("file", fileBody);
+			
+			System.out.println("Sending to AppVet: \n" 
+					+ "command: SUBMIT_REPORT\n"
+					+ "appid: " + appId + "\n" 
+					+ "toolid: " + Properties.toolId + "\n"
+					+ "score: " + score + "\n"
+					+ "toolrisk: " + reportStatus.name() + "\n");
 			
 			HttpPost httpPost = new HttpPost(Properties.appvetUrl);
 			String credentials = Base64.getEncoder().encodeToString((Properties.appvetUsername + ":" + Properties.appvetPassword).getBytes());
@@ -169,15 +179,15 @@ public class ReportUtil {
 		final String currentDate = format.format(date);
 		htmlBuffer.append("Date: \t\t" + currentDate + "\n\n");
 		if (reportStatus == ToolStatus.LOW) {
-			htmlBuffer.append("Risk: \t\t<font color=\"green\">"
+			htmlBuffer.append("Severity: \t\t<font color=\"green\">"
 					+ reportStatus.name() + "</font>\n");
 			htmlBuffer.append(lowDescription);
 		} else if (reportStatus == ToolStatus.MODERATE) {
-			htmlBuffer.append("Risk: \t\t<font color=\"orange\">"
+			htmlBuffer.append("Severity: \t\t<font color=\"orange\">"
 					+ reportStatus.name() + "</font>\n");
 			htmlBuffer.append(moderateDescription);
 		} else if (reportStatus == ToolStatus.HIGH) {
-			htmlBuffer.append("Risk: \t\t<font color=\"red\">"
+			htmlBuffer.append("Severity: \t\t<font color=\"red\">"
 					+ reportStatus.name() + "</font>\n");
 			htmlBuffer.append(highDescription);
 		} else {

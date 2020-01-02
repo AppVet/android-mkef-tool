@@ -59,6 +59,7 @@ public class Service extends HttpServlet {
 	private static final Logger log = Properties.log;
 	private static String appDirPath = null;
 	private String appFilePath = null;
+	private String iconFilePath = null;
 	private String htmlFileReportPath = null;
 	private String pdfFileReportPath = null;
 	private String fileName = null;
@@ -76,7 +77,8 @@ public class Service extends HttpServlet {
 		FileItemFactory factory = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		List<FileItem> items = null;
-		FileItem fileItem = null;
+		FileItem appFileItem = null;
+		FileItem iconFileItem = null;
 
 		try {
 			items = upload.parseRequest(request);
@@ -100,8 +102,13 @@ public class Service extends HttpServlet {
 			} else {
 				// item is a file
 				if (item != null) {
-					fileItem = item;
-					log.debug("Received file: " + fileItem.getName());
+					if (item.getName().endsWith(".apk")) {
+						appFileItem = item;
+						log.debug("Received app: " + appFileItem.getName());
+					} else if (item.getName().endsWith(".png")){
+						iconFileItem = item;
+						log.debug("Received icon: " + iconFileItem.getName());
+					}
 				}
 			}
 		}
@@ -112,13 +119,13 @@ public class Service extends HttpServlet {
 			return;
 		}
 
-		if (fileItem != null) {
+		if (appFileItem != null && iconFileItem != null) {
 			// Get app file
-			fileName = FileUtil.getFileName(fileItem.getName());
+			fileName = FileUtil.getFileName(appFileItem.getName());
 			// Must be an APK file
 			if (!fileName.endsWith(".apk")) {
 				HttpUtil.sendHttp400(response,
-						"Invalid app file: " + fileItem.getName());
+						"Invalid app file: " + appFileItem.getName());
 				return;
 			}
 
@@ -130,19 +137,26 @@ public class Service extends HttpServlet {
 			}
 
 			// Create report paths
-			htmlFileReportPath = Properties.TEMP_DIR + "/" + appId + "/"
+			htmlFileReportPath = appDirPath + "/"
 					+ reportName + "." + Properties.reportFormat.toLowerCase();
-			pdfFileReportPath = Properties.TEMP_DIR + "/" + appId + "/"
+			pdfFileReportPath = appDirPath + "/"
 					+ reportName + ".pdf";
 
-			appFilePath = Properties.TEMP_DIR + "/" + appId + "/" + fileName;
+			appFilePath = appDirPath + "/" + fileName;
+			iconFilePath = appDirPath + "/icon.png";
 
-			if (!FileUtil.saveFileUpload(fileItem, appFilePath)) {
-				HttpUtil.sendHttp500(response, "Could not save uploaded file");
+			if (!FileUtil.saveFileUpload(appFileItem, appFilePath)) {
+				HttpUtil.sendHttp500(response, "Could not save app");
 				return;
 			}
+			
+			if (!FileUtil.saveFileUpload(iconFileItem, iconFilePath)) {
+				HttpUtil.sendHttp500(response, "Could not save icon");
+				return;
+			}
+			
 		} else {
-			HttpUtil.sendHttp400(response, "No app was received.");
+			HttpUtil.sendHttp400(response, "No app or icon was received.");
 			return;
 		}
 
@@ -156,49 +170,21 @@ public class Service extends HttpServlet {
 
 		// Start processing app
 		log.debug("Executing MKEF on app");
-		boolean succeeded = customExecute(reportBuffer);
-		log.debug("Finished execution MKEF on app - succeeded: " + succeeded);
-
-		if (!succeeded) {
-			log.error("Error detected: " + reportBuffer.toString());
-			String errorReport = ReportUtil
-					.getHtmlReport(
-							response,
-							fileName,
-							ToolStatus.ERROR,
-							reportBuffer.toString(),
-							"Description: \tApp does not contain Android MasterKey or ExtraField vulnerabilities.\n\n",
-							null,
-							"Description: \tApp contains Android MasterKey and/or ExtraField vulnerabilities.\n\n",
-							"Description: \tError or exception processing app.\n\n");
-
-			// Send report to AppVet
-			if (Properties.protocol.equals(Protocol.ASYNCHRONOUS.name())) {
-				// Send report file in new HTTP Request to AppVet
-				boolean fileSaved = FileUtil.saveReport(errorReport,
-						htmlFileReportPath);
-				if (fileSaved) {
-					final StringBuffer reportBuffer = new StringBuffer();
-					boolean htmlToPdfSuccessful = execute(Properties.htmlToPdfCommand + " " 
-							+ htmlFileReportPath + " " + pdfFileReportPath,
-							reportBuffer);
-					if (htmlToPdfSuccessful) {
-						ReportUtil.sendInNewHttpRequest(appId,
-								pdfFileReportPath, ToolStatus.ERROR);
-					} else {
-						log.error("Error generating PDF file "
-								+ pdfFileReportPath);
-					}
-				} else {
-					log.error("Error writing HTML report " + htmlFileReportPath);
-				}
-			}
-			return;
-		}
+		double score = analyzeMkef(reportBuffer);
+		System.out.println("MKEF score: " + score);
 
 		// Analyze report and generate tool status
 		log.debug("Analyzing report for " + appFilePath);
-		ToolStatus reportStatus = analyzeReport(reportBuffer.toString());
+		ToolStatus reportStatus = null;
+		if (score < 0.0) {
+			reportStatus = ToolStatus.ERROR;
+		} else if (score == 0.0) {
+			reportStatus = ToolStatus.LOW;
+		} else if (score == 10.0) {
+			reportStatus = ToolStatus.HIGH;
+		} else {
+			reportStatus = ToolStatus.ERROR;
+		}
 		log.debug("Result: " + reportStatus.name());
 		String reportContent = null;
 
@@ -234,7 +220,7 @@ public class Service extends HttpServlet {
 						reportBuffer);
 				if (htmlToPdfSuccessful) {
 					ReportUtil.sendInNewHttpRequest(appId, pdfFileReportPath,
-							reportStatus);
+							score, reportStatus);
 				} else {
 					log.error("Error generating PDF file " + pdfFileReportPath);
 				}
@@ -259,51 +245,8 @@ public class Service extends HttpServlet {
 		System.gc();
 	}
 
-	public static ToolStatus analyzeReport(String report) {
-		if (report == null || report.isEmpty()) {
-			log.error("Report is null or empty.");
-			return ToolStatus.ERROR;
-		}
-		// Scan file for result strings defined in configuration file. Here,
-		// we always scan in this order: ERRORs, HIGHs, MODERATEs, and LOWs.
-		if (Properties.errorResults != null
-				&& !Properties.errorResults.isEmpty()) {
-			for (String s : Properties.errorResults) {
-				if (report.indexOf(s) > -1) {
-					log.debug("Error message: " + s);
-					return ToolStatus.ERROR;
-				}
-			}
-		}
-		if (Properties.highResults != null && !Properties.highResults.isEmpty()) {
-			for (String s : Properties.highResults) {
-				if (report.indexOf(s) > -1) {
-					log.debug("High message: " + s);
-					return ToolStatus.HIGH;
-				}
-			}
-		}
-		if (Properties.moderateResults != null
-				&& !Properties.moderateResults.isEmpty()) {
-			for (String s : Properties.moderateResults) {
-				if (report.indexOf(s) > -1) {
-					log.debug("Moderate message: " + s);
-					return ToolStatus.MODERATE;
-				}
-			}
-		}
-		if (Properties.lowResults != null && !Properties.lowResults.isEmpty()) {
-			for (String s : Properties.lowResults) {
-				if (report.indexOf(s) > -1) {
-					log.debug("Low message: " + s);
-					return ToolStatus.LOW;
-				}
-			}
-		}
-		return Properties.defaultStatus;
-	}
-
-	public boolean customExecute(StringBuffer output) {
+	/** If no Master Key found, return toolscore=0.0. If found, return toolscore=10.0. */
+	public double analyzeMkef(StringBuffer output) {
 		log.debug("Creating MKEFScanner");
 		MKEFScanner mkefScan = new MKEFScanner(appFilePath);
 		log.debug("Created MKEFScanner");
@@ -311,19 +254,22 @@ public class Service extends HttpServlet {
 		if (mkefScan.hasMasterKey()) {
 			mkefScan.close();
 			// The following String MUST match in ToolProperties.xml
+			System.out.println("Android MasterKey vulnerability detected.");
 			output.append("Android MasterKey vulnerability detected.");
-			return true;
+			return 10.0;
 		} else if (mkefScan.hasExtraField()) {
 			mkefScan.close();
 			// The following String MUST match in ToolProperties.xml
+			System.out.println("Android ExtraField vulnerability detected.");
 			output.append("Android ExtraField vulnerability detected.");
-			return true;
+			return 10.0;
 		} else {
-			log.debug("Mo Master KEy found");
+			log.debug("Mo Master Key found");
 			mkefScan.close();
+			System.out.println("No Android MaskterKey or ExtraField vulnerabilities detected.");
 			output.append("No Android MaskterKey or ExtraField vulnerabilities detected.");
 		}
-		return true;
+		return 0.0;
 	}
 
 	/**
@@ -394,7 +340,6 @@ public class Service extends HttpServlet {
 				process.destroy();
 			}
 		}
-
 	}
 
 	private class IOThreadHandler extends Thread {
