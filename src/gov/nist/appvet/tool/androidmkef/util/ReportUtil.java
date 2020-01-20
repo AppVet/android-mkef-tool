@@ -179,21 +179,17 @@ public class ReportUtil {
 		final String currentDate = format.format(date);
 		htmlBuffer.append("Date: \t\t" + currentDate + "\n\n");
 		if (reportStatus == ToolStatus.LOW) {
-			htmlBuffer.append("Severity: \t\t<font color=\"green\">"
+			htmlBuffer.append("Score: \t\t<font color=\"green\">"
 					+ reportStatus.name() + "</font>\n");
-			htmlBuffer.append(lowDescription);
 		} else if (reportStatus == ToolStatus.MODERATE) {
-			htmlBuffer.append("Severity: \t\t<font color=\"orange\">"
+			htmlBuffer.append("Score: \t\t<font color=\"orange\">"
 					+ reportStatus.name() + "</font>\n");
-			htmlBuffer.append(moderateDescription);
 		} else if (reportStatus == ToolStatus.HIGH) {
-			htmlBuffer.append("Severity: \t\t<font color=\"red\">"
+			htmlBuffer.append("Score: \t\t<font color=\"red\">"
 					+ reportStatus.name() + "</font>\n");
-			htmlBuffer.append(highDescription);
 		} else {
 			htmlBuffer.append("Status: \t<font color=\"red\">"
 					+ reportStatus.name() + "</font>\n");
-			htmlBuffer.append(errorDescription);
 		}
 		htmlBuffer.append("<h3>Details</h3>");
 		htmlBuffer.append(report);

@@ -72,6 +72,8 @@ public class Service extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
+		log.debug("In MKEF doPost()");
 
 		// Get received HTTP parameters and file upload
 		FileItemFactory factory = new DiskFileItemFactory();
